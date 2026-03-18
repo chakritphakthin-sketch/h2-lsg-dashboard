@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>H2-LSG Advanced Platform</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@300;400;600&family=Prompt:wght@300;400;600&display=swap');
+
+        :root {
+            --bg-base: #0b0f19;
+            --surface: #151c2c;
+            --surface-light: #1e293b;
+            --primary: #0ea5e9;
+            --primary-glow: rgba(14, 165, 233, 0.4);
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+        }
+
+        body {
+            font-family: 'Prompt', sans-serif;
+            background-color: var(--bg-base);
+            color: var(--text-main);
+            margin: 0;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        h1, h2, h3, .digital-font {
+            font-family: 'Chakra Petch', sans-serif;
+        }
+
+        .container { max-width: 1400px; margin: auto; }
+
+        /* Header Area */
+        .header {
+            display: flex; justify-content: space-between; align-items: center;
+            background: var(--surface); padding: 15px 30px; border-radius: 15px;
+            border-bottom: 2px solid var(--primary); margin-bottom: 20px;
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
+        .header-title h1 { margin: 0; font-size: 28px; letter-spacing: 1px; }
+        .header-title span { color: var(--primary); }
+        
+        .wallet-box {
+            background: rgba(16, 185, 129, 0.1); border: 1px solid var(--success);
+            padding: 10px 20px; border-radius: 10px; font-size: 18px;
+        }
+        .wallet-box span { color: var(--success); font-weight: bold; font-size: 22px; }
+
+        /* Grid Layout */
+        .layout-grid {
+            display: grid; grid-template-columns: 3fr 1fr; gap: 20px;
+        }
+
+        /* Cards & Panels */
+        .panel {
+            background: var(--surface); border-radius: 15px; padding: 20px;
+            border: 1px solid #334155;
+        }
+
+        .stats-grid {
+            display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px; margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: var(--surface-light); padding: 15px; border-radius: 10px;
+            text-align: center; border-top: 3px solid var(--primary); transition: 0.3s;
+        }
+        .stat-card:hover { transform: translateY(-3px); box-shadow: 0 5px 15px rgba(0,0,0,0.5); }
+        .stat-card h3 { margin: 0 0 10px 0; font-size: 14px; color: var(--text-muted); }
+        .stat-card .value { font-size: 28px; font-weight: bold; color: var(--text-main); }
+
+        /* Trading Section */
+        .trading-section { margin-top: 20px; }
+        .trade-controls {
+            display: flex; gap: 10px; margin-top: 15px;
+        }
+        .btn {
+            flex: 1; padding: 15px; border: none; border-radius: 8px; font-family: 'Prompt';
+            font-size: 16px; font-weight: bold; cursor: pointer; color: white; transition: 0.2s;
+            display: flex; align-items: center; justify-content: center; gap: 8px;
+        }
+        .btn-buy { background: linear-gradient(135deg, #10b981, #059669); }
+        .btn-buy:hover { box-shadow: 0 0 15px rgba(16, 185, 129, 0.5); transform: scale(1.02); }
+        .btn-sell { background: linear-gradient(135deg, #ef4444, #dc2626); }
+        .btn-sell:hover { box-shadow: 0 0 15px rgba(239, 68, 68, 0.5); transform: scale(1.02); }
+
+        /* Telecom Terminal */
+        .terminal {
+            background: #000; color: #0f0; font-family: monospace; padding: 15px;
+            border-radius: 10px; height: 250px; overflow-y: auto; border: 1px solid #0f0;
+            box-shadow: inset 0 0 10px rgba(0, 255, 0, 0.2);
+        }
+        .terminal p { margin: 5px 0; font-size: 12px; }
+
+        /* Toggle Switches (Manual Override) */
+        .switch-group { margin-top: 15px; display: flex; justify-content: space-between; align-items: center; background: var(--surface-light); padding: 10px; border-radius: 8px;}
+        .switch { position: relative; display: inline-block; width: 50px; height: 24px; }
+        .switch input { opacity: 0; width: 0; height: 0; }
+        .slider { position: absolute; cursor: pointer; top: 0; left: 0; right: 0; bottom: 0; background-color: #475569; transition: .4s; border-radius: 34px; }
+        .slider:before { position: absolute; content: ""; height: 18px; width: 18px; left: 3px; bottom: 3px; background-color: white; transition: .4s; border-radius: 50%; }
+        input:checked + .slider { background-color: var(--primary); }
+        input:checked + .slider:before { transform: translateX(26px); }
+
+        /* Log Table */
+        table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 14px; }
+        th, td { text-align: left; padding: 8px; border-bottom: 1px solid #334155; }
+        th { color: var(--text-muted); }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="header-title">
+            <h1>H2-LSG <span>NEXUS</span></h1>
+            <div style="font-size: 12px; color: var(--text-muted); margin-top: 5px;">
+                <i class="fas fa-satellite-dish" style="color: var(--success);"></i> โครงข่าย 5G Private Network สถานะ: ปกติ (Latency: <span id="latency">8</span>ms)
+            </div>
+        </div>
+        <div class="wallet-box">
+            <i class="fas fa-wallet"></i> ยอดเงินคงเหลือ: ฿<span id="wallet-balance" class="digital-font">15,000.00</span>
+        </div>
+    </div>
+
+    <div class="layout-grid">
+        <div class="main-content">
+            <div class="stats-grid">
+                <div class="stat-card" style="border-color: var(--warning);">
+                    <h3><i class="fas fa-sun"></i> Solar Power</h3>
+                    <div class="value digital-font"><span id="solar-val">0.0</span> kW</div>
+                </div>
+                <div class="stat-card" style="border-color: var(--primary);">
+                    <h3><i class="fas fa-flask"></i> H2 Storage</h3>
+                    <div class="value digital-font"><span id="h2-val">45.5</span> %</div>
+                </div>
+                <div class="stat-card" style="border-color: var(--success);">
+                    <h3><i class="fas fa-bolt"></i> Grid Load</h3>
+                    <div class="value digital-font"><span id="load-val">0.0</span> kW</div>
+                </div>
+                <div class="stat-card" style="border-color: #8b5cf6;">
+                    <h3><i class="fas fa-chart-line"></i> H2 Price/Unit</h3>
+                    <div class="value digital-font">฿<span id="price-val">120.5</span></div>
+                </div>
+            </div>
+
+            <div class="panel">
+                <h3 style="margin-top: 0; display: flex; justify-content: space-between;">
+                    <span><i class="fas fa-wave-square"></i> Real-time Energy Flow (Live)</span>
+                    <span style="font-size: 12px; background: rgba(239, 68, 68, 0.2); color: var(--danger); padding: 3px 8px; border-radius: 10px;" id="sys-mode">MODE: STANDBY</span>
+                </h3>
+                <canvas id="energyChart" height="80"></canvas>
+            </div>
+
+            <div class="panel trading-section">
+                <h3 style="margin-top: 0;"><i class="fas fa-exchange-alt"></i> P2P Energy Trading (Smart Contract)</h3>
+                <p style="color: var(--text-muted); font-size: 14px;">ระบบเก็งกำไรพลังงานอัตโนมัติ คุณสามารถแทรกแซงเพื่อซื้อหรือขายก๊าซไฮโดรเจนกลับเข้าสู่ระบบสายส่งได้</p>
+                <div class="trade-controls">
+                    <button class="btn btn-buy" onclick="tradeH2('buy')"><i class="fas fa-cart-arrow-down"></i> ซื้อ H2 เข้าถัง (ใช้เงิน)</button>
+                    <button class="btn btn-sell" onclick="tradeH2('sell')"><i class="fas fa-hand-holding-usd"></i> ขาย H2 ปั่นไฟคืน (รับเงิน)</button>
+                </div>
+                
+                <h4 style="margin-bottom: 5px; color: var(--text-muted);">ประวัติการทำธุรกรรม (Blockchain Ledger)</h4>
+                <table id="tx-table">
+                    <tr><th>เวลา</th><th>ประเภท</th><th>ปริมาณ</th><th>สถานะเครือข่าย</th></tr>
+                    </table>
+            </div>
+        </div>
+
+        <div class="side-content">
+            <div class="panel" style="margin-bottom: 20px;">
+                <h3 style="margin-top: 0;"><i class="fas fa-sliders-h"></i> Manual Override</h3>
+                <div class="switch-group">
+                    <span>วาล์ว Electrolyzer (P2G)</span>
+                    <label class="switch"><input type="checkbox" id="sw-p2g" checked onchange="logAction('P2G Valve Toggle')"><span class="slider"></span></label>
+                </div>
+                <div class="switch-group">
+                    <span>วาล์ว Fuel Cell (G2P)</span>
+                    <label class="switch"><input type="checkbox" id="sw-g2p" onchange="logAction('G2P Valve Toggle')"><span class="slider"></span></label>
+                </div>
+                <div class="switch-group">
+                    <span>ระบบ AI Auto-Pilot</span>
+                    <label class="switch"><input type="checkbox" id="sw-ai" checked onchange="logAction('AI Control Status Changed')"><span class="slider"></span></label>
+                </div>
+            </div>
+
+            <div class="panel" style="padding: 10px;">
+                <h3 style="margin: 5px 10px; font-size: 14px;"><i class="fas fa-terminal"></i> Telecom Data Packets (MQTT)</h3>
+                <div class="terminal" id="terminal-log">
+                    <p>> [SYSTEM] H2-LSG Core Initialized...</p>
+                    <p>> [NET] Establishing 5G URLLC connection...</p>
+                    <p>> [NET] Connection Stable. Handshake complete.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ตั้งค่าตัวแปรเบื้องต้น
+    let wallet = 15000.00;
+    let h2Level = 45.5;
+    let currentPrice = 120.5;
+    
+    // ตั้งค่ากราฟด้วย Chart.js
+    const ctx = document.getElementById('energyChart').getContext('2d');
+    const chart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: ['-50s', '-40s', '-30s', '-20s', '-10s', 'Now'],
+            datasets: [
+                { label: 'Solar Production (kW)', borderColor: '#f59e0b', backgroundColor: 'rgba(245, 158, 11, 0.1)', data: [110, 115, 112, 120, 125, 122], fill: true, tension: 0.4 },
+                { label: 'Grid Demand (kW)', borderColor: '#10b981', backgroundColor: 'rgba(16, 185, 129, 0.1)', data: [90, 95, 100, 92, 85, 90], fill: true, tension: 0.4 }
+            ]
+        },
+        options: { responsive: true, animation: { duration: 0 }, scales: { y: { beginAtZero: true, max: 200 } } }
+    });
+
+    // ฟังก์ชันอัปเดตข้อมูลแบบ Real-time (Loop ทุกๆ 2 วินาที)
+    setInterval(() => {
+        // สุ่มตัวเลขพลังงาน
+        let solar = (110 + Math.random() * 30).toFixed(1);
+        let load = (80 + Math.random() * 40).toFixed(1);
+        let latency = Math.floor(5 + Math.random() * 10);
+        
+        // อัปเดตหน้าจอ
+        document.getElementById('solar-val').innerText = solar;
+        document.getElementById('load-val').innerText = load;
+        document.getElementById('latency').innerText = latency;
+        
+        // ความผันผวนของราคาก๊าซ
+        currentPrice = currentPrice + (Math.random() * 4 - 2);
+        document.getElementById('price-val').innerText = currentPrice.toFixed(1);
+
+        // อัปเดตกราฟ
+        chart.data.datasets[0].data.shift(); chart.data.datasets[0].data.push(solar);
+        chart.data.datasets[1].data.shift(); chart.data.datasets[1].data.push(load);
+        chart.update();
+
+        // AI Logic: ถ้ายอด Solar > Load ให้ผลิต H2 (Power-to-Gas)
+        let modeText = document.getElementById('sys-mode');
+        if(parseFloat(solar) > parseFloat(load) && document.getElementById('sw-ai').checked) {
+            modeText.innerText = "MODE: P2G (STORING H2)";
+            modeText.style.background = "rgba(14, 165, 233, 0.2)"; modeText.style.color = "var(--primary)";
+            if(h2Level < 100) h2Level += 0.1;
+            addLog(`[AI] Solar excess detected. Triggering Electrolyzer via IoT.`);
+        } else if(document.getElementById('sw-ai').checked) {
+            modeText.innerText = "MODE: G2P (DISCHARGING)";
+            modeText.style.background = "rgba(16, 185, 129, 0.2)"; modeText.style.color = "var(--success)";
+            if(h2Level > 0) h2Level -= 0.1;
+            addLog(`[AI] Grid demand high. Dispatching Fuel Cell power.`);
+        }
+        document.getElementById('h2-val').innerText = h2Level.toFixed(1);
+
+    }, 2000);
+
+    // ฟังก์ชันซื้อขาย (Trading System)
+    function tradeH2(action) {
+        let amount = Math.floor(Math.random() * 5) + 1; // สุ่มซื้อขาย 1-5 หน่วย
+        let cost = amount * currentPrice;
+        let time = new Date().toLocaleTimeString();
+
+        if(action === 'buy') {
+            if(wallet >= cost && h2Level < 100) {
+                wallet -= cost; h2Level += amount;
+                addLog(`[TRADE] Executed BUY order for ${amount} units. Payload encrypted.`);
+                addTxRow(time, '<span style="color:var(--success)">BUY</span>', amount + ' unit', '200 OK');
+            } else { alert("ยอดเงินไม่พอ หรือ ถังเต็มแล้ว!"); return; }
+        } else {
+            if(h2Level >= amount) {
+                wallet += cost; h2Level -= amount;
+                addLog(`[TRADE] Executed SELL order for ${amount} units. Smart contract updated.`);
+                addTxRow(time, '<span style="color:var(--danger)">SELL</span>', amount + ' unit', '200 OK');
+            } else { alert("ปริมาณ H2 ไม่พอขาย!"); return; }
+        }
+        
+        // อัปเดตยอดเงิน
+        document.getElementById('wallet-balance').innerText = wallet.toLocaleString('th-TH', {minimumFractionDigits: 2});
+        document.getElementById('h2-val').innerText = h2Level.toFixed(1);
+    }
+
+    // ฟังก์ชันเพิ่มข้อมูลในตาราง
+    function addTxRow(time, type, qty, status) {
+        let table = document.getElementById('tx-table');
+        let row = table.insertRow(1);
+        row.innerHTML = `<td>${time}</td><td>${type}</td><td>${qty}</td><td><i class="fas fa-check-circle" style="color:var(--success)"></i> ${status}</td>`;
+        if(table.rows.length > 5) table.deleteRow(5); // โชว์แค่ 4 รายการล่าสุด
+    }
+
+    // ฟังก์ชันพิมพ์ Log แบบ Hacker
+    function addLog(msg) {
+        let term = document.getElementById('terminal-log');
+        let p = document.createElement('p');
+        p.innerText = `> [${new Date().toLocaleTimeString()}] ${msg}`;
+        term.appendChild(p);
+        term.scrollTop = term.scrollHeight; // เลื่อนลงล่างสุดออโต้
+    }
+
+    function logAction(action) {
+        addLog(`[USER] Manual override: ${action}`);
+    }
+</script>
+
+</body>
+</html>
